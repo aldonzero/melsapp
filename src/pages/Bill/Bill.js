@@ -8,7 +8,7 @@ import {
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { submitForm, submitDelete } from '@/utils/event';
-
+import { pagination } from '@/utils/utils'
 import styles from './TableList.less';
 
 const FormItem = Form.Item;
@@ -25,14 +25,19 @@ const RadioGroup = Radio.Group;
 @Form.create()
 export default class Bill extends PureComponent {
     state = {
+        list: [],
         isShowForm: false,
         url: 'bill'
     };
+    params = {
+        page: 1,
+        pageSize: 10,
+    }
 
     columns = [
         {
             title: '编号',
-            dataIndex: 'no',
+            dataIndex: 'billNo',
         },
         {
             title: '工程量',
@@ -70,10 +75,6 @@ export default class Bill extends PureComponent {
     ];
 
     render() {
-        const {
-            bill: { data },
-            loading,
-        } = this.props;
         return (
             <PageHeaderWrapper title="设备类别列表">
 
@@ -87,8 +88,8 @@ export default class Bill extends PureComponent {
                         <Table
                             bordered
                             columns={this.columns}
-                            dataSource={data.list}
-                            pagination={data.pagination}
+                            dataSource={this.state.list}
+                            pagination={this.state.pagination}
                         />
 
                     </div>
@@ -96,7 +97,7 @@ export default class Bill extends PureComponent {
                 <Modal
                     title={this.state.title}
                     visible={this.state.isShowForm}
-                    onOk={()=>submitForm(this.newForm, this.state.type, this.props.dispatch, this.state.url, this.formCallback)}
+                    onOk={() => submitForm(this.newForm, this.state.type, this.props.dispatch, this.state.url, this.formCallback)}
                     onCancel={() => {
                         this.newForm.props.form.resetFields();
                         this.setState({
@@ -116,8 +117,23 @@ export default class Bill extends PureComponent {
     }
 
     handleFetch = () => {
+        let _this = this;
         this.props.dispatch({
             type: 'bill/fetch',
+            payload: this.params,
+            callback: (response) => {
+                console.log(123)
+                if (response.code == 200 || response == 0) {
+                    this.setState({
+                        list: response.data.list,
+                        pagination: pagination(response, (current) => {
+                            _this.params.page = current;
+                            _this.handleFetch();
+                        })
+                    })
+
+                }
+            }
         });
     }
 

@@ -1,26 +1,27 @@
 
 
 import { apiQuery, apiQueryById, apiAdd, apiRemove, apiUpdate } from '@/services/api';
-var _namespace = 'bill';
+var _namespace = 'userRole';
 
 export default {
-  namespace: 'bill',
+  namespace: 'userRole',
   state: {
     data: {
       list: [],
       pagination: {},
     },
-    billData: {}
+    machineryData: {}
   },
 
   effects: {
 
-    *fetch({ payload,callback }, { call, put }) {
+    *fetch({ payload ,callback}, { call, put }) {
       const response = yield call(apiQuery, _namespace, payload);
       yield put({
         type: 'save',
         payload: response,
       });
+      console.log('response'+response)
       if (callback) callback(response);
     },
     *fetchId({ payload, callback }, { call }) {

@@ -1,6 +1,7 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
+import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import {
     Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, InputNumber, DatePicker, Modal, message, Badge, Divider, Steps, Radio, Table
@@ -28,7 +29,7 @@ export default class Project extends PureComponent {
     state = {
         list: [],
         isShowForm: false,
-        url: 'machinery'
+        url: 'project'
     };
     params = {
         page: 1,
@@ -42,7 +43,13 @@ export default class Project extends PureComponent {
             dataIndex: 'no'
         }, {
             title: '项目名称',
-            dataIndex: 'projectName'
+            // dataIndex: 'projectName',
+            render: (data) => (
+                <Fragment>
+                    <a type="ghost" onClick={() => this.handleToWorkingPage(data.id)}>{data.projectName}</a>
+                    <Divider type="vertical" />
+                </Fragment>
+            ),
         }, {
             title: '项目地址',
             dataIndex: 'address'
@@ -66,7 +73,7 @@ export default class Project extends PureComponent {
             title: '操作',
             render: (data) => (
                 <Fragment>
-                    <a type="ghost" onClick={() => this.handleModalVisible(data.id)}>编辑</a>
+                    <a type="ghost" onClick={() => this.handleToUpdatePage(data.id)}>编辑</a>
                     <Divider type="vertical" />
                     <a type="danger" onClick={() => submitDelete(this.props.dispatch, this.state.url, data.id, this.handleFetch)} >删除</a>
                 </Fragment>
@@ -117,5 +124,19 @@ export default class Project extends PureComponent {
                 }
             }
         });
+    }
+
+    handleToUpdatePage=(_id)=>{
+        this.props.dispatch(routerRedux.push({ 
+            pathname: './projectAdd',
+            query: {id: _id}
+            }))
+    }
+
+    handleToWorkingPage=(_id)=>{
+        this.props.dispatch(routerRedux.push({ 
+            pathname: './profile',
+            query: {id: _id}
+            }))
     }
 }

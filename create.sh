@@ -37,10 +37,10 @@ form_content="  <FormItem label='${2}' {...formItemLayout}>\n
 echo -e $form_content>>${file_name}
 }
 
-echo_form "billNo" "结款编号"
 echo_form "projectId" "项目"
-echo_form "quantities" "名称"
+echo_form "machineryId" "设备编号"
+echo_form "workingHour" "工时"
 echo_form "price" "单价"
+echo_form "workingDate" "工作日期"
 echo_form "agent" "经办人"
-echo_form "state" "状态"
 echo_form "remark" "备注"

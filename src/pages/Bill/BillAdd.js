@@ -25,8 +25,9 @@ const { RangePicker } = DatePicker;
 const TextArea = Input.TextArea;
 
 
-@connect(({ project, loading }) => ({
+@connect(({ project,bill, loading }) => ({
     project,
+    bill,
     loading: loading,
 }))
 @Form.create()
@@ -244,7 +245,7 @@ export default class BillAdd extends PureComponent {
             values.state = projectState;
             if (!err) {
                 this.props.dispatch({
-                    type: 'project/add',
+                    type: 'bill/add',
                     payload: values,
                     callback: (response) => {
                         if (response.code == '0' || response.code == '201') {

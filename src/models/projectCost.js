@@ -1,21 +1,21 @@
 
 
 import { apiQuery, apiQueryById, apiAdd, apiRemove, apiUpdate } from '@/services/api';
-var _namespace = 'bill';
+var _namespace = 'projectCost';
 
 export default {
-  namespace: 'bill',
+  namespace: 'projectCost',
   state: {
     data: {
       list: [],
       pagination: {},
     },
-    billData: {}
+    machineryData: {}
   },
 
   effects: {
 
-    *fetch({ payload,callback }, { call, put }) {
+    *fetch({ payload ,callback}, { call, put }) {
       const response = yield call(apiQuery, _namespace, payload);
       yield put({
         type: 'save',

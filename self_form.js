@@ -1,20 +1,3 @@
-<FormItem label='结款编号' {...formItemLayout}>
- {
- formInfo && type == 'billNo' ? formInfo.billNo :
- getFieldDecorator('billNo', {
- initialValue: formInfo.billNo,
- rules: [
- {
- required: true,
- message: '结款编号不能为空'
- }
- ]
- })(
- <Input placeholder='请输入结款编号' />
- )
- }
- </FormItem>
-
 <FormItem label='项目' {...formItemLayout}>
  {
  formInfo && type == 'projectId' ? formInfo.projectId :
@@ -32,19 +15,36 @@
  }
  </FormItem>
 
-<FormItem label='名称' {...formItemLayout}>
+<FormItem label='设备编号' {...formItemLayout}>
  {
- formInfo && type == 'quantities' ? formInfo.quantities :
- getFieldDecorator('quantities', {
- initialValue: formInfo.quantities,
+ formInfo && type == 'machineryId' ? formInfo.machineryId :
+ getFieldDecorator('machineryId', {
+ initialValue: formInfo.machineryId,
  rules: [
  {
  required: true,
- message: '名称不能为空'
+ message: '设备编号不能为空'
  }
  ]
  })(
- <Input placeholder='请输入名称' />
+ <Input placeholder='请输入设备编号' />
+ )
+ }
+ </FormItem>
+
+<FormItem label='工时' {...formItemLayout}>
+ {
+ formInfo && type == 'workingHour' ? formInfo.workingHour :
+ getFieldDecorator('workingHour', {
+ initialValue: formInfo.workingHour,
+ rules: [
+ {
+ required: true,
+ message: '工时不能为空'
+ }
+ ]
+ })(
+ <Input placeholder='请输入工时' />
  )
  }
  </FormItem>
@@ -66,6 +66,23 @@
  }
  </FormItem>
 
+<FormItem label='工作日期' {...formItemLayout}>
+ {
+ formInfo && type == 'workingDate' ? formInfo.workingDate :
+ getFieldDecorator('workingDate', {
+ initialValue: formInfo.workingDate,
+ rules: [
+ {
+ required: true,
+ message: '工作日期不能为空'
+ }
+ ]
+ })(
+ <Input placeholder='请输入工作日期' />
+ )
+ }
+ </FormItem>
+
 <FormItem label='经办人' {...formItemLayout}>
  {
  formInfo && type == 'agent' ? formInfo.agent :
@@ -79,23 +96,6 @@
  ]
  })(
  <Input placeholder='请输入经办人' />
- )
- }
- </FormItem>
-
-<FormItem label='状态' {...formItemLayout}>
- {
- formInfo && type == 'state' ? formInfo.state :
- getFieldDecorator('state', {
- initialValue: formInfo.state,
- rules: [
- {
- required: true,
- message: '状态不能为空'
- }
- ]
- })(
- <Input placeholder='请输入状态' />
  )
  }
  </FormItem>

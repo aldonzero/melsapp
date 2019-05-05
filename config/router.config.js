@@ -1,22 +1,22 @@
 export default [
-  // // user
-  // {
-  //   path: '/user',
-  //   component: '../layouts/UserLayout',
-  //   routes: [
-  //     { path: '/user', redirect: '/user/login' },
-  //     { path: '/user/login', name: 'login', component: './User/Login' },
-  //     { path: '/user/register', name: 'register', component: './User/Register' },
-  //     {
-  //       path: '/user/register-result',
-  //       name: 'register.result',
-  //       component: './User/RegisterResult',
-  //     },
-  //     {
-  //       component: '404',
-  //     },
-  //   ],
-  // },
+  // user
+  {
+    path: '/app',
+    component: '../layouts/UserLayout',
+    routes: [
+      { path: '/app', redirect: '/user/login' },
+      { path: '/app/login', name: 'login', component: './User/Login' },
+      { path: '/app/register', name: 'register', component: './User/Register' },
+      {
+        path: '/user/register-result',
+        name: 'register.result',
+        component: './User/RegisterResult',
+      },
+      {
+        component: '404',
+      },
+    ],
+  },
   // app
   {
     path: '/',
@@ -110,6 +110,22 @@ export default [
             name: 'projectAdd',
             component: './Project/ProjectAdd',
           },
+          {
+            path: '/project/working',
+            name: 'working',
+            component: './Project/working',
+          },
+          {
+            path: '/project/cost',
+            name: 'cost',
+            component: './Project/ProjectCost',
+          },
+          {
+            path: '/project/profile',
+            name: 'profile',
+            hideInMenu: true,
+            component: './Project/ProjectProfile',
+          },
         ],
       },
       // 设备
@@ -157,7 +173,7 @@ export default [
           {
             path: '/user/user',
             name: 'user',
-            component: './User/Staff',
+            component: './User/User',
           },
          
         ],
@@ -173,7 +189,16 @@ export default [
             name: 'permission',
             component: './Sys/Permission',
           },
-         
+          {
+            path: '/sys/role',
+            name: 'role',
+            component: './Sys/Role',
+          },
+          {
+            path: '/sys/user',
+            name: 'user',
+            component: './Sys/UserRole',
+          },
         ],
       },
       // list

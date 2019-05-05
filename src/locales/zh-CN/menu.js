@@ -49,10 +49,15 @@ export default {
   'menu.billManage.bill':'结算列表',  
   'menu.projectManage':'项目管理',
   'menu.projectManage.project':'项目列表',
+  'menu.projectManage.working':'工时列表',
+  'menu.projectManage.cost':'项目费用',
+  'menu.projectManage。profile':'明细',
   'menu.projectManage.projectAdd':'项目立项',
   'menu.userManage':'人员管理',
   'menu.userManage.user':'人员列表',
   'menu.sysManage':'系统管理',
   'menu.sysManage.permission':'权限列表',
+  'menu.sysManage.role':'角色管理',
+  'menu.sysManage.user':'用户角色管理',
 
 };

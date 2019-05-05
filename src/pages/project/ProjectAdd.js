@@ -24,6 +24,15 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 const TextArea = Input.TextArea;
 
+const selectValidator = (rule, value, callback) => {
+    const { getFieldValue } = this.props.form;
+    if (value && value !== -1) {
+        callback('请选择')
+    }
+    // 必须总是返回一个 callback，否则 validateFields 无法响应
+    callback();
+  }
+
 
 @connect(({ project, loading }) => ({
     project,
@@ -33,7 +42,8 @@ const TextArea = Input.TextArea;
 export default class ProjectAdd extends PureComponent {
     state = {
         width: '100%',
-        type: 'new'
+        type: 'new',
+        formInfo:[]
     };
 
     render() {
@@ -68,7 +78,6 @@ export default class ProjectAdd extends PureComponent {
             <PageHeaderWrapper
                 title="项目立项" content=" "
             >
-
                 <Form layout="horizontal">
                     <Card title="项目信息">
                         {
@@ -156,19 +165,20 @@ export default class ProjectAdd extends PureComponent {
                             {
                                 formInfo && type == 'state' ? formInfo.state :
                                     getFieldDecorator('state', {
-                                        initialValue: formInfo.state,
+                                        initialValue: formInfo.state == null ?'':formInfo.state+'',
                                         rules: [
                                             {
-                                                required: true,
-                                                message: '项目状态不能为空'
+                                                required: true,message: '项目状态不能为空',
+                                                whitespace: true,message: '项目状态不能为空',
                                             }
                                         ]
                                     })(
                                         <Select placeholder="-请选择-">
+                                            <Option value="">-请选择-</Option>
                                             <Option value="0">立项</Option>
                                             <Option value="1">施工</Option>
-                                            <Option value="2">竣工</Option>
-                                            <Option value="3">放弃</Option>
+                                            <Option value='2'>竣工</Option>
+                                            <Option value='3'>放弃</Option>
                                         </Select>
                                     )
                             }
@@ -252,27 +262,62 @@ export default class ProjectAdd extends PureComponent {
         );
     }
 
-    submitForm = (projectState) => {
-        console.log("submit form")
-        if (this.state.type == 'new') {
-            this.handleAdd(projectState);
+    componentDidMount(){
+        const query_params = new URLSearchParams(this.props.location.search);
+        const id = query_params .get('id');
+        if(id != null && id != ''){
+            this.handleFetchProject(id)
+            this.setState({
+                type:'edit'
+            })
         }
     }
-    handleAdd = (projectState) => {
-        console.log('handleAdd ....')
+
+    handleFetchProject=(id)=>{
+        const { dispatch } = this.props;
+        dispatch({
+            type: 'project/fetchId',
+            payload: id,
+            callback: (response) => {
+                if (response.code == '200' || response.code == '0') {
+                    this.setState({
+                        formInfo: response.data
+                    })
+                    console.log(this.state.formInfo)
+                }
+            }
+        });
+    }
+
+
+    submitForm = (projectState) => {
+        console.log("submit form")
         this.props.form.validateFields((err, values) => {
-            values.state = projectState;
             if (!err) {
-                this.props.dispatch({
-                    type: 'project/add',
-                    payload: values,
-                    callback: (response) => {
-                        if (response.code == '0' || response.code == '201') {
-                            message.info("新建成功");
-                           
-                        }
+                values[state]=projectState;
+                if (this.state.type == 'new') {
+                    this.handleAdd(values,'add');
+                }else{
+                    this.handleAdd(values,'update');
+                }
+            }
+        });
+    }
+
+    handleAdd = (values,action) => {
+        console.log('handleAdd ....')
+        this.props.dispatch({
+            type: 'project/'+action,
+            payload: values,
+            callback: (response) => {
+                if (response.code == '0' || response.code == '201') {
+                    if(action == 'add'){
+                        message.info("新建成功");
+                    }else{
+                        message.info('修改成功');
                     }
-                });
+                    
+                }
             }
         });
     }
