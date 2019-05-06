@@ -344,7 +344,7 @@ class RolePermissionForm extends React.Component {
     handleFetch = () => {
         this.props.dispatch({
             type: 'permission/fetch',
-            payload: { "page": 0, "pageSize": 0 },
+            payload: { "page": 0, "pageSize": 0,"available":1 },
             callback: (response) => {
                 if (response.code == 200 || response == 0) {
                     this.setState({

@@ -246,12 +246,24 @@ class NewForm extends React.Component {
                                 <Input />
                             )}
                 </Form.Item>
+                <Form.Item label="编码" {...formItemLayout}>
+                    {
+                        formInfo && type == 'percode' ? formInfo.percode :
+                            getFieldDecorator('percode', {
+                                initialValue: formInfo.percode,
+                                rules: [{
+                                    required: true, message: '请填写权限编码'
+                                }],
+                            })(
+                                <Input />
+                            )}
+                </Form.Item>
                 <Form.Item label="状态" {...formItemLayout}>
                     {
                         formInfo && type == 'available' ? formInfo.available :
                             getFieldDecorator('available', {
                                 valuePropName: 'checked',
-                                initialValue: formInfo.available,
+                                initialValue: formInfo.available==null?'true':formInfo.available,
                                 rules: [{
                                     required: true, message: '请选择状态'
                                 }],

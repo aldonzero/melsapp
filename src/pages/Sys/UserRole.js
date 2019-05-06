@@ -39,10 +39,10 @@ export default class UserRole extends PureComponent {
     columns = [
         {
             title: '工号',
-            dataIndex: 'userId'
+            dataIndex: 'id'
         }, {
             title: '姓名',
-            dataIndex: 'userName'
+            dataIndex: 'name'
         }, {
             title: '性别',
             dataIndex: 'sex',
@@ -54,7 +54,7 @@ export default class UserRole extends PureComponent {
             }
         }, {
             title: '手机号',
-            dataIndex: 'userPhone'
+            dataIndex: 'phone'
         },
         {
             title: '入职时间',
@@ -76,7 +76,7 @@ export default class UserRole extends PureComponent {
             render: (data) => (
                 <Fragment>
                     <Divider type="vertical" />
-                    <a type="ghost" onClick={() => this.handleModalVisible(data.userId)}>用户角色</a>
+                    <a type="ghost" onClick={() => this.handleModalVisible(data.id)}>用户角色</a>
                 </Fragment>
             ),
         },

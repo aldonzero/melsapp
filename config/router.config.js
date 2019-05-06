@@ -24,7 +24,7 @@ export default [
     Routes: ['src/pages/Authorized'],
     routes: [
       // dashboard
-      { path: '/', redirect: '/dashboard/analysis', authority: ['admin', 'user'] },
+      { path: '/', redirect: '/dashboard/analysis' },
       {
         path: '/dashboard',
         name: 'dashboard',
@@ -97,6 +97,7 @@ export default [
       // 项目
       {
         path: '/project',
+        authority: ['projectM'],
         icon: 'table',
         name: 'projectManage',
         routes: [
@@ -131,6 +132,7 @@ export default [
       // 设备
       {
         path: '/machinery',
+        authority: ['machineryM'],
         icon: 'table',
         name: 'machineryManage',
         routes: [
@@ -150,6 +152,7 @@ export default [
        {
         path: '/bill',
         icon: 'table',
+        authority: ['billM'],
         name: 'billManage',
         routes: [
           {
@@ -168,6 +171,7 @@ export default [
        {
         path: '/user',
         icon: 'user',
+        authority: ['userM'],
         name: 'userManage',
         routes: [
           {

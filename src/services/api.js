@@ -202,3 +202,10 @@ export async function apiRemove(url,id) {
     method:'DELETE'
   });
 }
+
+export async function login(params) {
+  return request('/api/login', {
+    method: 'POST',
+    data: params,
+  });
+}

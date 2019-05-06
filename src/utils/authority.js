@@ -13,9 +13,9 @@ export function getAuthority(str) {
   if (typeof authority === 'string') {
     return [authority];
   }
-  if (!authority && APP_TYPE === 'site') {
-    return ['admin'];
-  }
+  // if (!authority && APP_TYPE === 'site') {
+  //   return ['admin'];
+  // }
   return authority;
 }
 export function setAuthority(authority) {

@@ -27,7 +27,7 @@ function AuthComponent({ children, location, routerData }) {
   return (
     <Authorized
       authority={getRouteAuthority(location.pathname, routerData)}
-      noMatch={isLogin ? <Exception403 /> : <Redirect to="/user/login" />}
+      noMatch={isLogin ? <Exception403 /> : <Redirect to="/app/login" />}
     >
       {children}
     </Authorized>
