@@ -5,40 +5,39 @@ import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import { getTimeDistance } from '@/utils/utils';
 import styles from './Analysis.less';
 import PageLoading from '@/components/PageLoading';
+import { callbackify } from 'util';
 
-const IntroduceRow = React.lazy(() => import('./IntroduceRow'));
+
 const SalesCard = React.lazy(() => import('./SalesCard'));
-const TopSearch = React.lazy(() => import('./TopSearch'));
-const ProportionSales = React.lazy(() => import('./ProportionSales'));
-const OfflineData = React.lazy(() => import('./OfflineData'));
 
-@connect(({ chart, loading }) => ({
-  chart,
-  loading: loading.effects['chart/fetch'],
+
+@connect(({ chart,bill, loading }) => ({
+  chart,bill,
+  loading: loading,
 }))
 class Analysis extends Component {
   state = {
     salesType: 'all',
     currentTabKey: '',
-    rangePickerValue: getTimeDistance('year'),
+    year: getTimeDistance('year'),
+    chartList:[]
   };
 
+  
   componentDidMount() {
     const { dispatch } = this.props;
-    this.reqRef = requestAnimationFrame(() => {
-      dispatch({
-        type: 'chart/fetch',
-      });
+    console.log('bill chart')
+    dispatch({
+      type: 'bill/chart',
+      payload:this.state.year,
+      callback: (response) => {
+        this.setState({
+          chartList:response.data
+        })
+      }
     });
   }
 
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'chart/clear',
-    });
-    cancelAnimationFrame(this.reqRef);
-  }
 
   handleChangeSalesType = e => {
     this.setState({
@@ -59,7 +58,7 @@ class Analysis extends Component {
     });
 
     dispatch({
-      type: 'chart/fetchSalesData',
+      type: '/chart/fake_chart_data',
     });
   };
 
@@ -70,7 +69,7 @@ class Analysis extends Component {
     });
 
     dispatch({
-      type: 'chart/fetchSalesData',
+      type: '/chart/fake_chart_data',
     });
   };
 
@@ -93,12 +92,11 @@ class Analysis extends Component {
     const { rangePickerValue, salesType, currentTabKey } = this.state;
     const { chart, loading } = this.props;
     const {
-      visitData,
-      visitData2,
+     
       salesData,
-      searchData,
+
       offlineData,
-      offlineChartData,
+
       salesTypeData,
       salesTypeDataOnline,
       salesTypeDataOffline,
@@ -128,52 +126,14 @@ class Analysis extends Component {
 
     return (
       <GridContent>
-        <Suspense fallback={<PageLoading />}>
-          <IntroduceRow loading={loading} visitData={visitData} />
-        </Suspense>
         <Suspense fallback={null}>
           <SalesCard
-            rangePickerValue={rangePickerValue}
-            salesData={salesData}
+            // rangePickerValue={rangePickerValue}
+            salesData={this.state.chartList}
             isActive={this.isActive}
-            handleRangePickerChange={this.handleRangePickerChange}
+            // handleRangePickerChange={this.handleRangePickerChange}
             loading={loading}
-            selectDate={this.selectDate}
-          />
-        </Suspense>
-        <div className={styles.twoColLayout}>
-          <Row gutter={24}>
-            <Col xl={12} lg={24} md={24} sm={24} xs={24}>
-              <Suspense fallback={null}>
-                <TopSearch
-                  loading={loading}
-                  visitData2={visitData2}
-                  selectDate={this.selectDate}
-                  searchData={searchData}
-                  dropdownGroup={dropdownGroup}
-                />
-              </Suspense>
-            </Col>
-            <Col xl={12} lg={24} md={24} sm={24} xs={24}>
-              <Suspense fallback={null}>
-                <ProportionSales
-                  dropdownGroup={dropdownGroup}
-                  salesType={salesType}
-                  loading={loading}
-                  salesPieData={salesPieData}
-                  handleChangeSalesType={this.handleChangeSalesType}
-                />
-              </Suspense>
-            </Col>
-          </Row>
-        </div>
-        <Suspense fallback={null}>
-          <OfflineData
-            activeKey={activeKey}
-            loading={loading}
-            offlineData={offlineData}
-            offlineChartData={offlineChartData}
-            handleTabChange={this.handleTabChange}
+            // selectDate={this.selectDate}
           />
         </Suspense>
       </GridContent>

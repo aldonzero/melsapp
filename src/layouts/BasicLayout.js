@@ -43,17 +43,24 @@ const query = {
   },
 };
 
+@connect(({ login }) => ({
+  userId: login.userId,
+}))
 class BasicLayout extends React.Component {
   componentDidMount() {
     const {
       dispatch,
       route: { routes, path, authority },
+      userId,
     } = this.props;
+    console.log('currentUser.userid=>',userId)
     dispatch({
       type: 'user/fetchCurrent',
+      payload:userId
     });
     dispatch({
       type: 'setting/getSetting',
+     
     });
     dispatch({
       type: 'menu/getMenuData',

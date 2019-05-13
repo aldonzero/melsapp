@@ -12,6 +12,7 @@ export default {
 
   state: {
     status: undefined,
+    userId: {},
   },
 
   effects: {
@@ -80,6 +81,7 @@ export default {
         ...state,
         status: payload.status,
         type: payload.type,
+        userId:payload.data.currentUser.userid
       };
     },
   },

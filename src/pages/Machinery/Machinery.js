@@ -19,34 +19,37 @@ const { Option } = Select;
 const RadioGroup = Radio.Group;
 
 
-@connect(({ machinery, loading }) => ({
-    machinery,
+@connect(({ machinery,machineryType, loading }) => ({
+    machinery,machineryType,
     loading: loading,
 }))
 @Form.create()
 export default class Machinery extends PureComponent {
     state = {
         list: [],
+        expandForm: false,
         isShowForm: false,
-        url: 'machinery'
+        url: 'machinery',
+        machineryTypeInfo:[],
     };
     params = {
         page: 1,
         pageSize: 10,
-        name: ''
+        no: '',
+        machineryId:''
     }
 
     columns = [
         {
             title: '设备编号',
             dataIndex: 'no',
-            key:'id'
+            key: 'id'
         }, {
             title: '类型',
-            dataIndex: 'model'
+            dataIndex: 'machineryType.name'
         }, {
             title: '型号',
-            dataIndex: 'brand'
+            dataIndex: 'model'
         },
         {
             title: '操作',
@@ -60,12 +63,134 @@ export default class Machinery extends PureComponent {
         },
     ];
 
+    renderSimpleForm() {
+        const {
+            form: { getFieldDecorator },
+        } = this.props;
+        return (
+            <Form onSubmit={this.handleSearch} layout="inline">
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col md={8} sm={24}>
+                        <FormItem label="设备编号">
+                            {getFieldDecorator('no')(<Input placeholder="请输入" />)}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <FormItem label="设备类别">
+                            {getFieldDecorator('machineryId')(
+                                <Select placeholder="-请选择-">
+                                    {
+                                        this.state.machineryTypeInfo.map(d => <Option key={d.id}>{d.name}</Option>)
+                                    }
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <span className={styles.submitButtons}>
+                            <Button type="primary" htmlType="submit">
+                                查询
+                  </Button>
+                            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                                重置
+                  </Button>
+                            {/* <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                                展开 <Icon type="down" />
+                            </a> */}
+                        </span>
+                    </Col>
+                </Row>
+            </Form>
+        );
+    }
+
+    renderAdvancedForm() {
+        const {
+            form: { getFieldDecorator },
+        } = this.props;
+        return (
+            <Form onSubmit={this.handleSearch} layout="inline">
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col md={8} sm={24}>
+                        <FormItem label="规则名称">
+                            {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <FormItem label="设备类别">
+                            {getFieldDecorator('machineryId')(
+                                <Select placeholder="-请选择-">
+                                    {
+                                        this.state.machineryTypeInfo.map(d => <Option key={d.id}>{d.name}</Option>)
+                                    }
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <FormItem label="调用次数">
+                            {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
+                        </FormItem>
+                    </Col>
+                </Row>
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col md={8} sm={24}>
+                        <FormItem label="更新日期">
+                            {getFieldDecorator('date')(
+                                <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <FormItem label="使用状态">
+                            {getFieldDecorator('status3')(
+                                <Select placeholder="请选择" style={{ width: '100%' }}>
+                                    <Option value="0">关闭</Option>
+                                    <Option value="1">运行中</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <FormItem label="使用状态">
+                            {getFieldDecorator('status4')(
+                                <Select placeholder="请选择" style={{ width: '100%' }}>
+                                    <Option value="0">关闭</Option>
+                                    <Option value="1">运行中</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                    </Col>
+                </Row>
+                <div style={{ overflow: 'hidden' }}>
+                    <div style={{ marginBottom: 24 }}>
+                        <Button type="primary" htmlType="submit">
+                            查询
+                </Button>
+                        <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                            重置
+                </Button>
+                        <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                            收起 <Icon type="up" />
+                        </a>
+                    </div>
+                </div>
+            </Form>
+        );
+    }
+
+    renderForm() {
+        const { expandForm } = this.state;
+        return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
+    }
+
     render() {
         return (
             <PageHeaderWrapper title="设备类别列表">
 
                 <Card bordered={false}>
                     <div className={styles.tableList}>
+                        <div className={styles.tableListForm}>{this.renderForm()}</div>
                         <div className={styles.tableListOperator}>
                             <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(null)}>
                                 新建
@@ -93,15 +218,53 @@ export default class Machinery extends PureComponent {
                     }}
                 >
 
-                    <NewForm disabled='true' formInfo={this.state.formInfo} type={this.state.type} wrappedComponentRef={(inst) => { this.newForm = inst; }} />
+                    <NewForm
+                        formInfo={this.state.formInfo}
+                        machineryTypeInfo={this.state.machineryTypeInfo}
+                        type={this.state.type}
+                        wrappedComponentRef={(inst) => { this.newForm = inst; }} />
                 </Modal>
             </PageHeaderWrapper>
         );
     }
 
-    componentDidMount() {
-        console.log('componentDidMount')
+    //查询
+    /*******************************************************************/
+
+    toggleForm = () => {
+        const { expandForm } = this.state;
+        this.setState({
+            expandForm: !expandForm,
+        });
+    };
+
+    handleFormReset = () => {
+        const { form, dispatch } = this.props;
+        form.resetFields();
+        this.setState({
+          formValues: {},
+        });
+        this.params.no = '',
+        this.params.machineryId = '';
         this.handleFetch();
+      };
+
+      handleSearch = e => {
+        e.preventDefault();
+        const { form } = this.props;
+        form.validateFields((err, fieldsValue) => {
+          if (err) return;
+          this.params.no = fieldsValue.no,
+          this.params.machineryId = fieldsValue.machineryId;
+          this.handleFetch();
+        });
+      };
+    /*******************************************************************/
+
+
+    componentDidMount() {
+        this.handleFetch();
+        this.handleFetchType();
     }
 
     handleFetch = () => {
@@ -110,9 +273,7 @@ export default class Machinery extends PureComponent {
             type: 'machinery/fetch',
             payload: this.params,
             callback: (response) => {
-                console.log(123)
                 if (response.code == 200 || response == 0) {
-                    console.log(response)
                     this.setState({
                         list: response.data.list,
                         pagination: pagination(response, (current) => {
@@ -120,7 +281,20 @@ export default class Machinery extends PureComponent {
                             _this.handleFetch();
                         })
                     })
-                    console.log(this.state)
+                }
+            }
+        });
+    }
+
+    handleFetchType = () => {
+        this.props.dispatch({
+            type: 'machineryType/fetch',
+            payload: { "page": 0, "pageSize": 0, "orderBy": "id" },
+            callback: (response) => {
+                if (response.code == 200 || response == 0) {
+                    this.setState({
+                        machineryTypeInfo: response.data.list
+                    })
                 }
             }
         });
@@ -168,36 +342,8 @@ export default class Machinery extends PureComponent {
 }
 
 
-@connect(({ machineryType, loading }) => ({
-    machineryType,
-    loading: loading,
-}))
+
 class NewForm extends React.Component {
-
-    state = {
-        machineryType: []
-    }
-    componentDidMount() {
-        this.handleFetchType();
-    }
-
-    handleFetchType = () => {
-        let _this = this;
-        this.props.dispatch({
-            type: 'machineryType/fetch',
-            payload: { "page": 0, "pageSize": 0, "orderBy": "id" },
-            callback: (response) => {
-                if (response.code == 200 || response == 0) {
-                    console.log(response)
-                    this.setState({
-                        machineryType: response.data.list
-                    })
-                    console.log(this.state)
-                }
-            }
-        });
-    }
-
     render() {
         const formItemLayout = {
             labelCol: {
@@ -209,6 +355,7 @@ class NewForm extends React.Component {
         }
         const { getFieldDecorator } = this.props.form;
         const formInfo = this.props.formInfo || {};
+        const machineryTypeInfo = this.props.machineryTypeInfo || {};
         const type = this.props.type;
         return (
             <Form layout="horizontal" disabled='true' >
@@ -241,9 +388,8 @@ class NewForm extends React.Component {
                                 }],
                             })(
                                 <Select placeholder="-请选择-">
-
                                     {
-                                        this.state.machineryType.map(d => <Option key={d.id}>{d.name}</Option>)
+                                        machineryTypeInfo.map(d => <Option key={d.id}>{d.name}</Option>)
                                     }
                                 </Select>
                             )

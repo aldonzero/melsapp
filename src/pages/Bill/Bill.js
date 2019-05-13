@@ -37,7 +37,7 @@ export default class Bill extends PureComponent {
     columns = [
         {
             title: '编号',
-            dataIndex: 'billNo',
+            dataIndex: 'no',
         },
         {
             title: '工程量',

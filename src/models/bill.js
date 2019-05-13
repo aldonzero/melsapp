@@ -1,6 +1,6 @@
 
 
-import { apiQuery, apiQueryById, apiAdd, apiRemove, apiUpdate } from '@/services/api';
+import { apiQuery, apiQueryById, apiAdd, apiRemove, apiUpdate,apiChart } from '@/services/api';
 var _namespace = 'bill';
 
 export default {
@@ -21,6 +21,15 @@ export default {
         type: 'save',
         payload: response,
       });
+      if (callback) callback(response);
+    },
+    *chart({ payload,callback }, { call }) {
+      console.log('bill model')
+      const response = yield call(apiChart, payload);
+      // yield put({
+      //   type: 'save',
+      //   payload: response,
+      // });
       if (callback) callback(response);
     },
     *fetchId({ payload, callback }, { call }) {

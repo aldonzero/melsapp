@@ -1,5 +1,5 @@
 import { query as queryUsers, queryCurrent } from '@/services/user';
-import { apiQuery, apiQueryById, apiAdd, apiRemove, apiUpdate } from '@/services/api';
+import { apiQuery, apiQueryById, apiAdd, apiRemove, apiUpdate,apiQueryByCurrent } from '@/services/api';
 var _namespace = 'user';
 export default {
   namespace: 'user',
@@ -18,7 +18,7 @@ export default {
       });
     },
     *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+      const response = yield call(apiQueryByCurrent);
       yield put({
         type: 'saveCurrentUser',
         payload: response,
@@ -61,7 +61,7 @@ export default {
     saveCurrentUser(state, action) {
       return {
         ...state,
-        currentUser: action.payload || {},
+        currentUser: action.payload.data || {},
       };
     },
     changeNotifyCount(state, action) {

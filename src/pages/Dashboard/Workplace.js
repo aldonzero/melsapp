@@ -1,119 +1,108 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent,Fragment } from 'react';
 import moment from 'moment';
 import { connect } from 'dva';
-import Link from 'umi/link';
-import { Row, Col, Card, List, Avatar } from 'antd';
-import { Radar } from '@/components/Charts';
-import EditableLinkGroup from '@/components/EditableLinkGroup';
+import { routerRedux } from 'dva/router';
+import {  Card, Table, Avatar,Divider } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-
+import { pagination } from '@/utils/utils'
 import styles from './Workplace.less';
 
-const links = [
-  {
-    title: '操作一',
-    href: '',
-  },
-  {
-    title: '操作二',
-    href: '',
-  },
-  {
-    title: '操作三',
-    href: '',
-  },
-  {
-    title: '操作四',
-    href: '',
-  },
-  {
-    title: '操作五',
-    href: '',
-  },
-  {
-    title: '操作六',
-    href: '',
-  },
-];
 
-@connect(({ user, project, activities, chart, loading }) => ({
+@connect(({ user, project, loading, login }) => ({
   currentUser: user.currentUser,
   project,
-  activities,
-  chart,
-  currentUserLoading: loading.effects['user/fetchCurrent'],
-  projectLoading: loading.effects['project/fetchNotice'],
-  activitiesLoading: loading.effects['activities/fetchList'],
+  userId: login.userId,
+  loading: loading,
 }))
 class Workplace extends PureComponent {
+  state = {
+    list: [],
+    url: 'project'
+  };
+  params = {
+    page: 1,
+    pageSize: 10,
+    name: ''
+  }
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, userId } = this.props;
     dispatch({
       type: 'user/fetchCurrent',
+      payload: userId
     });
-    dispatch({
-      type: 'project/fetchNotice',
-    });
-    dispatch({
-      type: 'activities/fetchList',
-    });
-    dispatch({
-      type: 'chart/fetch',
-    });
+    this.handleFetch();
   }
-
-  componentWillUnmount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'chart/clear',
-    });
-  }
-
-  renderActivities() {
-    const {
-      activities: { list },
-    } = this.props;
-    return list.map(item => {
-      const events = item.template.split(/@\{([^{}]*)\}/gi).map(key => {
-        if (item[key]) {
-          return (
-            <a href={item[key].link} key={item[key].name}>
-              {item[key].name}
-            </a>
-          );
+  handleFetch = () => {
+    let _this = this;
+    this.props.dispatch({
+      type: 'project/fetch',
+      payload: this.params,
+      callback: (response) => {
+        console.log(123)
+        if (response.code == 200 || response == 0) {
+          console.log('response',response.data.list)
+          this.setState({
+            list: response.data.list,
+            pagination: pagination(response, (current) => {
+              _this.params.page = current;
+              _this.handleFetch();
+            })
+          })
+          console.log('state list',this.state.list)
         }
-        return key;
-      });
-      return (
-        <List.Item key={item.id}>
-          <List.Item.Meta
-            avatar={<Avatar src={item.user.avatar} />}
-            title={
-              <span>
-                <a className={styles.username}>{item.user.name}</a>
-                &nbsp;
-                <span className={styles.event}>{events}</span>
-              </span>
-            }
-            description={
-              <span className={styles.datetime} title={item.updatedAt}>
-                {moment(item.updatedAt).fromNow()}
-              </span>
-            }
-          />
-        </List.Item>
-      );
+      }
     });
   }
+
+  handleToWorkingPage=(_id)=>{
+    this.props.dispatch(routerRedux.push({ 
+        pathname: '../project/profile',
+        query: {id: _id}
+        }))
+}
+
+
+
+  columns = [
+    {
+      title: '项目编号',
+      dataIndex: 'no'
+    }, {
+      title: '项目名称',
+      // dataIndex: 'projectName',
+      render: (data) => (
+        <Fragment>
+          <a type="ghost" onClick={() => this.handleToWorkingPage(data.id)}>{data.projectName}</a>
+          <Divider type="vertical" />
+        </Fragment>
+      ),
+    }, {
+      title: '项目地址',
+      dataIndex: 'address'
+    },
+    {
+      title: '开始日期',
+      dataIndex: 'startDate',
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+    },
+    {
+      title: '状态',
+      dataIndex: 'state',
+      render(val) {
+        let config = {
+          '0': '暂存', '1': '审核中', '2': '立项', '3': '施工', '4': '竣工', '5': '放弃'
+        }
+        return config[val];
+      }
+    },
+
+  ];
+
+
 
   render() {
     const {
       currentUser,
-      currentUserLoading,
-      project: { notice },
-      projectLoading,
-      activitiesLoading,
-      chart: { radarData },
     } = this.props;
 
     const pageHeaderContent =
@@ -124,129 +113,37 @@ class Workplace extends PureComponent {
           </div>
           <div className={styles.content}>
             <div className={styles.contentTitle}>
-              早安，
+              欢迎，
               {currentUser.name}
-              ，祝你开心每一天！
+              ，访问设备租赁信息管理系统！
             </div>
-            <div>
+            {/* <div>
               {currentUser.title} |{currentUser.group}
-            </div>
+            </div> */}
           </div>
         </div>
       ) : null;
 
-    const extraContent = (
-      <div className={styles.extraContent}>
-        <div className={styles.statItem}>
-          <p>项目数</p>
-          <p>56</p>
-        </div>
-        <div className={styles.statItem}>
-          <p>团队内排名</p>
-          <p>
-            8<span> / 24</span>
-          </p>
-        </div>
-        <div className={styles.statItem}>
-          <p>项目访问</p>
-          <p>2,223</p>
-        </div>
-      </div>
-    );
 
+      console.log('project into=>',this.state.list)
     return (
+      
       <PageHeaderWrapper
-        loading={currentUserLoading}
+        title=" "
         content={pageHeaderContent}
-        extraContent={extraContent}
+      // extraContent={extra}
       >
-        <Row gutter={24}>
-          <Col xl={16} lg={24} md={24} sm={24} xs={24}>
-            <Card
-              className={styles.projectList}
-              style={{ marginBottom: 24 }}
-              title="进行中的项目"
-              bordered={false}
-              extra={<Link to="/">全部项目</Link>}
-              loading={projectLoading}
-              bodyStyle={{ padding: 0 }}
-            >
-              {notice.map(item => (
-                <Card.Grid className={styles.projectGrid} key={item.id}>
-                  <Card bodyStyle={{ padding: 0 }} bordered={false}>
-                    <Card.Meta
-                      title={
-                        <div className={styles.cardTitle}>
-                          <Avatar size="small" src={item.logo} />
-                          <Link to={item.href}>{item.title}</Link>
-                        </div>
-                      }
-                      description={item.description}
-                    />
-                    <div className={styles.projectItemContent}>
-                      <Link to={item.memberLink}>{item.member || ''}</Link>
-                      {item.updatedAt && (
-                        <span className={styles.datetime} title={item.updatedAt}>
-                          {moment(item.updatedAt).fromNow()}
-                        </span>
-                      )}
-                    </div>
-                  </Card>
-                </Card.Grid>
-              ))}
-            </Card>
-            <Card
-              bodyStyle={{ padding: 0 }}
-              bordered={false}
-              className={styles.activeCard}
-              title="动态"
-              loading={activitiesLoading}
-            >
-              <List loading={activitiesLoading} size="large">
-                <div className={styles.activitiesList}>{this.renderActivities()}</div>
-              </List>
-            </Card>
-          </Col>
-          <Col xl={8} lg={24} md={24} sm={24} xs={24}>
-            <Card
-              style={{ marginBottom: 24 }}
-              title="快速开始 / 便捷导航"
-              bordered={false}
-              bodyStyle={{ padding: 0 }}
-            >
-              <EditableLinkGroup onAdd={() => {}} links={links} linkElement={Link} />
-            </Card>
-            <Card
-              style={{ marginBottom: 24 }}
-              bordered={false}
-              title="XX 指数"
-              loading={radarData.length === 0}
-            >
-              <div className={styles.chart}>
-                <Radar hasLegend height={343} data={radarData} />
-              </div>
-            </Card>
-            <Card
-              bodyStyle={{ paddingTop: 12, paddingBottom: 12 }}
-              bordered={false}
-              title="团队"
-              loading={projectLoading}
-            >
-              <div className={styles.members}>
-                <Row gutter={48}>
-                  {notice.map(item => (
-                    <Col span={12} key={`members-item-${item.id}`}>
-                      <Link to={item.href}>
-                        <Avatar src={item.logo} size="small" />
-                        <span className={styles.member}>{item.member}</span>
-                      </Link>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
-            </Card>
-          </Col>
-        </Row>
+        <Card bordered={false} title='我的项目'>
+          <div className={styles.tableList}>
+            <Table
+              bordered
+              columns={this.columns}
+              dataSource={this.state.list}
+              pagination={this.state.pagination}
+            />
+
+          </div>
+        </Card>
       </PageHeaderWrapper>
     );
   }

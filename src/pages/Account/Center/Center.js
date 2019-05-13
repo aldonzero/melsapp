@@ -6,9 +6,10 @@ import { Card, Row, Col, Icon, Avatar, Tag, Divider, Spin, Input } from 'antd';
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './Center.less';
 
-@connect(({ loading, user, project }) => ({
+@connect(({ loading, user, project,login }) => ({
   listLoading: loading.effects['list/fetch'],
   currentUser: user.currentUser,
+  userId:login.userId,
   currentUserLoading: loading.effects['user/fetchCurrent'],
   project,
   projectLoading: loading.effects['project/fetchNotice'],
@@ -21,9 +22,11 @@ class Center extends PureComponent {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch,userId } = this.props;
+    console.log('Center.userid=>',userId)
     dispatch({
       type: 'user/fetchCurrent',
+      payload:userId
     });
     dispatch({
       type: 'list/fetch',

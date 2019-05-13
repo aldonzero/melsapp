@@ -5,7 +5,6 @@ import router from 'umi/router';
 import {
     Row, Col, Card, Form, Input, Select, Icon, Button, Switch , Menu, InputNumber, DatePicker, Modal, message, Badge, Divider, Steps, Radio, Table
 } from 'antd';
-import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { submitForm, submitDelete } from '@/utils/event';
 import { pagination } from '@/utils/utils'
@@ -13,9 +12,7 @@ import { pagination } from '@/utils/utils'
 import styles from './TableList.less';
 
 const FormItem = Form.Item;
-const { Step } = Steps;
 const { TextArea } = Input;
-const { Option } = Select;
 const RadioGroup = Radio.Group;
 
 
@@ -33,7 +30,8 @@ export default class User extends PureComponent {
     params = {
         page: 1,
         pageSize: 10,
-        name: ''
+        name: '',
+        phone:''
     }
 
     columns = [
@@ -57,7 +55,7 @@ export default class User extends PureComponent {
             dataIndex: 'phone'
         },
         {
-            title: '入职时间',
+            title: '创建时间',
             dataIndex: 'createDate',
             render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
         },
@@ -66,7 +64,7 @@ export default class User extends PureComponent {
             dataIndex: 'available',
             render(val) {
                 let config = {
-                    'true': '启用', 'false': '禁用'
+                    'true': '在职', 'false': '离职'
                 }
                 return config[val];
             }
@@ -83,12 +81,47 @@ export default class User extends PureComponent {
         },
     ];
 
+    renderSimpleForm() {
+        const {
+            form: { getFieldDecorator },
+        } = this.props;
+        return (
+            <Form onSubmit={this.handleSearch} layout="inline">
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col md={8} sm={24}>
+                        <FormItem label="姓名">
+                            {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                    <FormItem label="手机号">
+                            {getFieldDecorator('phone')(<Input placeholder="请输入" />)}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <span className={styles.submitButtons}>
+                            <Button type="primary" htmlType="submit">
+                                查询
+                  </Button>
+                            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                                重置
+                  </Button>
+                           
+                        </span>
+                    </Col>
+                </Row>
+            </Form>
+        );
+    }
+
+
 
     render() {
         return (
             <PageHeaderWrapper title="人员列表" content=''>
                 <Card bordered={false}>
                     <div className={styles.tableList}>
+                    <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
                         <div className={styles.tableListOperator}>
                             <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(null)}>
                                 新建
@@ -122,6 +155,34 @@ export default class User extends PureComponent {
         );
     }
 
+    //查询
+    /*******************************************************************/
+
+   
+
+    handleFormReset = () => {
+        const { form, dispatch } = this.props;
+        form.resetFields();
+        this.setState({
+          formValues: {},
+        });
+        this.params.name = '',
+        this.params.phone = '';
+        this.handleFetch();
+      };
+
+      handleSearch = e => {
+        e.preventDefault();
+        const { form } = this.props;
+        form.validateFields((err, fieldsValue) => {
+          if (err) return;
+          this.params.name = fieldsValue.name,
+          this.params.phone = fieldsValue.phone;
+          this.handleFetch();
+        });
+      };
+    /*******************************************************************/
+
     componentDidMount() {
         this.handleFetch();
     }
@@ -132,9 +193,7 @@ export default class User extends PureComponent {
             type: 'user/fetchList',
             payload: this.params,
             callback: (response) => {
-                console.log(123)
                 if (response.code == 200 || response == 0) {
-                    console.log(response)
                     this.setState({
                         list: response.data.list,
                         pagination: pagination(response, (current) => {
@@ -248,6 +307,18 @@ class NewForm extends React.Component {
                                 }],
                             })(
                                 <Input />
+                            )}
+                </Form.Item>
+                <Form.Item label="密码" {...formItemLayout}>
+                    {
+                        formInfo && type == 'password' ? formInfo.password :
+                            getFieldDecorator('password', {
+                                initialValue: formInfo.password,
+                                rules: [{
+                                    required: true, message: '请填写密码'
+                                }],
+                            })(
+                                <Input type="password" />
                             )}
                 </Form.Item>
                 <Form.Item label="状态" {...formItemLayout}>

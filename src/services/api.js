@@ -209,3 +209,10 @@ export async function login(params) {
     data: params,
   });
 }
+
+export async function apiQueryByCurrent() {
+  return request(`/api/user/current`);
+}
+export async function apiChart(year) {
+  return request(`/api/bill/chart/${year}`);
+}

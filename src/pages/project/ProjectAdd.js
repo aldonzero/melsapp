@@ -149,7 +149,7 @@ export default class ProjectAdd extends PureComponent {
                             {
                                 formInfo && type == 'startDate' ? formInfo.startDate :
                                     getFieldDecorator('startDate', {
-                                        initialValue: moment(formInfo.startDate, 'YYYY-MM-DD'),
+                                        initialValue: formInfo.startDate == null ? moment(moment().format('YYYY-MM-DD'), 'YYYY-MM-DD') : moment(formInfo.startDate, 'YYYY-MM-DD'),
                                         rules: [
                                             {
                                                 required: true,

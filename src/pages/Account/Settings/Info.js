@@ -18,17 +18,17 @@ class Info extends Component {
     const menuMap = {
       base: <FormattedMessage id="app.settings.menuMap.basic" defaultMessage="Basic Settings" />,
       security: (
-        <FormattedMessage id="app.settings.menuMap.security" defaultMessage="Security Settings" />
+        <FormattedMessage id="app.settings.menuMap.security" defaultMessage="密码修改" />
       ),
-      binding: (
-        <FormattedMessage id="app.settings.menuMap.binding" defaultMessage="Account Binding" />
-      ),
-      notification: (
-        <FormattedMessage
-          id="app.settings.menuMap.notification"
-          defaultMessage="New Message Notification"
-        />
-      ),
+      // binding: (
+      //   <FormattedMessage id="app.settings.menuMap.binding" defaultMessage="Account Binding" />
+      // ),
+      // notification: (
+      //   <FormattedMessage
+      //     id="app.settings.menuMap.notification"
+      //     defaultMessage="New Message Notification"
+      //   />
+      // ),
     };
     const key = location.pathname.replace(`${match.path}/`, '');
     this.state = {
