@@ -58,6 +58,16 @@ export default {
   'menu.sysManage':'系统管理',
   'menu.sysManage.permission':'权限列表',
   'menu.sysManage.role':'角色管理',
-  'menu.sysManage.user':'用户角色管理',
-
+  'menu.sysManage.user':'用户管理',
+  'menu.sysManage.userRole':'用户角色管理',
+  'menu.rentalManage':'租赁管理',
+  'menu.rentalManage.rental':'租赁明细',
+  'menu.rentalManage.cost':'项目费用',
+  'menu.registrationManage':'进出场管理',
+  'menu.registrationManage.into':'进场管理',
+  'menu.registrationManage.exit':'出场管理',
+  'menu.ticketManage':'票据管理',
+  'menu.ticketManage.working':'工时票据',
+  'menu.ticketManage.type':'票据类别',
+  'menu.ticketManage.ticket':'项目票据',
 };

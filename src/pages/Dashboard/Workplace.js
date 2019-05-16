@@ -133,7 +133,7 @@ class Workplace extends PureComponent {
         content={pageHeaderContent}
       // extraContent={extra}
       >
-        <Card bordered={false} title='我的项目'>
+        <Card bordered={false} title='项目列表'>
           <div className={styles.tableList}>
             <Table
               bordered

@@ -46,7 +46,7 @@ export default [
       // 项目
       {
         path: '/project',
-        // authority: ['projectM'],
+        authority: ['projectM'],
         icon: 'table',
         name: 'projectManage',
         routes: [
@@ -60,16 +60,7 @@ export default [
             name: 'projectAdd',
             component: './Project/ProjectAdd',
           },
-          {
-            path: '/project/working',
-            name: 'working',
-            component: './Project/working',
-          },
-          {
-            path: '/project/cost',
-            name: 'cost',
-            component: './Project/ProjectCost',
-          },
+         
           {
             path: '/project/profile',
             name: 'profile',
@@ -81,7 +72,7 @@ export default [
       // 设备
       {
         path: '/machinery',
-        // authority: ['machineryM'],
+        authority: ['machineryM'],
         icon: 'table',
         name: 'machineryManage',
         routes: [
@@ -94,6 +85,25 @@ export default [
             path: '/machinery/machineryType',
             name: 'machineryType',
             component: './Machinery/MachineryType',
+          },
+        ],
+      },
+       // 设备
+       {
+        path: '/registration',
+        // authority: ['machineryM'],
+        icon: 'table',
+        name: 'registrationManage',
+        routes: [
+          {
+            path: '/registration/into',
+            name: 'into',
+            component: './Registration/EInto',
+          },
+          {
+            path: '/registration/exit',
+            name: 'exit',
+            component: './Registration/EExit',
           },
         ],
       },
@@ -116,27 +126,76 @@ export default [
           },
         ],
       },
-       // 人员管理
-       {
-        path: '/user',
-        icon: 'user',
-        // authority: ['userM'],
-        name: 'userManage',
+      // 租赁管理
+      {
+        path: '/rental',
+        icon: 'table',
+        authority: ['rentalM'],
+        name: 'rentalManage',
         routes: [
           {
-            path: '/user/user',
-            name: 'user',
-            component: './User/User',
+            path: '/rental/rental',
+            name: 'rental',
+            component: './Project/working',
           },
-         
+          {
+            path: '/rental/cost',
+            name: 'cost',
+            component: './Project/ProjectCost',
+          },
         ],
       },
+      // 租赁管理
+      {
+        path: '/ticket',
+        icon: 'table',
+        // authority: ['rentalM'],
+        name: 'ticketManage',
+        routes: [
+          {
+            path: '/ticket/working',
+            name: 'working',
+            component: './Project/working',
+          },
+          {
+            path: '/ticket/ticket',
+            name: 'ticket',
+            component: './Ticket/Ticket',
+          },
+          {
+            path: '/ticket/type',
+            name: 'type',
+            component: './Ticket/TicketType',
+          },
+        ],
+      },
+       // 人员管理
+      //  {
+      //   path: '/user',
+      //   icon: 'user',
+      //   // authority: ['userM'],
+      //   name: 'userManage',
+      //   routes: [
+      //     {
+      //       path: '/user/user',
+      //       name: 'user',
+      //       component: './User/User',
+      //     },
+         
+      //   ],
+      // },
        // 系统管理
        {
         path: '/sys',
         icon: 'highlight',
         name: 'sysManage',
+        authority: ['sysM'],
         routes: [
+          {
+            path: '/sys/user',
+            name: 'user',
+            component: './User/User',
+          },
           {
             path: '/sys/permission',
             name: 'permission',
@@ -148,8 +207,8 @@ export default [
             component: './Sys/Role',
           },
           {
-            path: '/sys/user',
-            name: 'user',
+            path: '/sys/userRole',
+            name: 'userRole',
             component: './Sys/UserRole',
           },
         ],
