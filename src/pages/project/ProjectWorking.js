@@ -40,8 +40,8 @@ export default class ProjectWorking extends PureComponent {
             dataIndex: 'no',
         },
         {
-            title: '项目编号',
-            dataIndex: 'project.no',
+            title: '项目',
+            dataIndex: 'project.projectName',
         },
         {
             title: '设备编号',
@@ -70,6 +70,35 @@ export default class ProjectWorking extends PureComponent {
             ),
         },
     ];
+    renderSimpleForm() {
+        const {
+            form: { getFieldDecorator },
+        } = this.props;
+        return (
+            <Form onSubmit={this.handleSearch} layout="inline">
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col md={8} sm={24}>
+                        <FormItem label="项目编号">
+                            {getFieldDecorator('projectNo')(<Input placeholder="请输入" />)}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <span className={styles.submitButtons}>
+                            <Button type="primary" htmlType="submit">
+                                查询
+                  </Button>
+                            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                                重置
+                  </Button>
+                            {/* <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                                展开 <Icon type="down" />
+                            </a> */}
+                        </span>
+                    </Col>
+                </Row>
+            </Form>
+        );
+    }
 
     render() {
         return (
@@ -82,6 +111,7 @@ export default class ProjectWorking extends PureComponent {
                                 新建
                          </Button>
                         </div>
+                        <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
                         <Table
                             bordered
                             columns={this.columns}
@@ -108,6 +138,30 @@ export default class ProjectWorking extends PureComponent {
             </PageHeaderWrapper>
         );
     }
+
+    //查询
+    /*******************************************************************/
+    handleFormReset = () => {
+        const { form, dispatch } = this.props;
+        form.resetFields();
+        this.setState({
+            formValues: {},
+        });
+        this.params.no = '',
+            this.params.machineryId = '';
+        this.handleFetch();
+    };
+
+    handleSearch = e => {
+        e.preventDefault();
+        const { form } = this.props;
+        form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            this.params.no = fieldsValue.no,
+                this.handleFetch();
+        });
+    };
+    /*******************************************************************/
 
     componentDidMount() {
         this.handleFetch();

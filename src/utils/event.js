@@ -63,3 +63,21 @@ export function submitDelete(dispatch,url,id,_callback){
         }
     });
 }
+
+
+export function submitAudit(dispatch,url,values,_callback){
+    dispatch({
+        type: url+'/update',
+        payload: values,
+        callback: (response) => {
+            console.log('responnse',response)
+            if (response.code == '0' || response.code == '201') {
+                message.info("审核成功");
+            }else{
+                message.warning("审核失败")
+            }
+            _callback();
+        }
+    });
+}
+

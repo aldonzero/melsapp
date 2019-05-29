@@ -78,7 +78,7 @@ export default {
   proxy: {
     '/api': {
       // target: ' https://www.easy-mock.com/mock/5cac9d333040f52aa81fa9d9/',
-      target: ' http://localhost:8081/',
+      target: ' http://localhost:8080/',
       changeOrigin: true,
       // pathRewrite: { '^/': ''},
       // secure: false, //配置关闭证书签名验证

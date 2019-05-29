@@ -60,10 +60,10 @@ export default {
       });
       reloadAuthorized();
       // redirect
-      if (window.location.pathname !== '/user/login') {
+      if (window.location.pathname !== '/app/login') {
         yield put(
           routerRedux.replace({
-            pathname: '/user/login',
+            pathname: '/app/login',
             search: stringify({
               redirect: window.location.href,
             }),

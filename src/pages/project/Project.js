@@ -4,12 +4,16 @@ import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import router from 'umi/router';
 import {
-    Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, InputNumber, DatePicker, Modal, message, Badge, Divider, Steps, Radio, Table
+    Row, Col, Card, Form, Input, Select, Icon, Button, Alert, Menu, InputNumber, DatePicker, Modal, message, Badge, Divider, Steps, Radio, Table
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { submitForm, submitDelete } from '@/utils/event';
 import { pagination } from '@/utils/utils'
+import RenderAuthorized from '@/components/Authorized';
+import { getAuthority } from '@/utils/authority';
+let Authorized = RenderAuthorized(getAuthority());
+const noMatch = '';
 
 import styles from './TableList.less';
 
@@ -34,7 +38,7 @@ export default class Project extends PureComponent {
     params = {
         page: 1,
         pageSize: 10,
-        name: ''
+        no: ''
     }
 
     columns = [
@@ -57,14 +61,14 @@ export default class Project extends PureComponent {
         {
             title: '开始日期',
             dataIndex: 'startDate',
-            render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+            render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
         },
         {
             title: '状态',
             dataIndex: 'state',
-            render(val){
-                let config  = {
-                    '0':'暂存','1':'审核中','2':'立项','3':'施工','4':'竣工','5':'放弃'
+            render(val) {
+                let config = {
+                    '0': '暂存', '1': '审核中', '2': '审核未通过', '4': '施工中', '5': '竣工', '6': '放弃'
                 }
                 return config[val];
             }
@@ -74,6 +78,11 @@ export default class Project extends PureComponent {
             render: (data) => (
                 <Fragment>
                     <a type="ghost" onClick={() => this.handleToUpdatePage(data.id)}>编辑</a>
+                    
+                    <Authorized authority={['projectAudit']} >
+                    <Divider type="vertical" />
+                        <a type="ghost" onClick={() => this.handleToAuditPage(data.id)} >审核</a>
+                    </Authorized>
                     <Divider type="vertical" />
                     <a type="danger" onClick={() => submitDelete(this.props.dispatch, this.state.url, data.id, this.handleFetch)} >删除</a>
                 </Fragment>
@@ -81,12 +90,44 @@ export default class Project extends PureComponent {
         },
     ];
 
+    renderSimpleForm() {
+        const {
+            form: { getFieldDecorator },
+        } = this.props;
+        return (
+            <Form onSubmit={this.handleSearch} layout="inline">
+                <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+                    <Col md={8} sm={24}>
+                        <FormItem label="项目编号">
+                            {getFieldDecorator('projectNo')(<Input placeholder="请输入" />)}
+                        </FormItem>
+                    </Col>
+                    <Col md={8} sm={24}>
+                        <span className={styles.submitButtons}>
+                            <Button type="primary" htmlType="submit">
+                                查询
+                  </Button>
+                            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+                                重置
+                  </Button>
+                            {/* <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+                                展开 <Icon type="down" />
+                            </a> */}
+                        </span>
+                    </Col>
+                </Row>
+            </Form>
+        );
+    }
+
+
     render() {
         return (
-            <PageHeaderWrapper title="设备类别列表" content=''>
+            <PageHeaderWrapper title="项目列表" content=''>
 
                 <Card bordered={false}>
                     <div className={styles.tableList}>
+                        <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
                         <Table
                             bordered
                             columns={this.columns}
@@ -99,6 +140,29 @@ export default class Project extends PureComponent {
             </PageHeaderWrapper>
         );
     }
+
+    //查询
+    /*******************************************************************/
+    handleFormReset = () => {
+        const { form, dispatch } = this.props;
+        form.resetFields();
+        this.setState({
+            formValues: {},
+        });
+        this.params.no = '',
+        this.handleFetch();
+    };
+
+    handleSearch = e => {
+        e.preventDefault();
+        const { form } = this.props;
+        form.validateFields((err, fieldsValue) => {
+            if (err) return;
+            this.params.no = fieldsValue.projectNo,
+                this.handleFetch();
+        });
+    };
+    /*******************************************************************/
 
     componentDidMount() {
         this.handleFetch();
@@ -120,23 +184,30 @@ export default class Project extends PureComponent {
                             _this.handleFetch();
                         })
                     })
-                    
+
                 }
             }
         });
     }
 
-    handleToUpdatePage=(_id)=>{
-        this.props.dispatch(routerRedux.push({ 
+    handleToUpdatePage = (_id) => {
+        this.props.dispatch(routerRedux.push({
             pathname: './projectAdd',
-            query: {id: _id}
-            }))
+            query: { id: _id }
+        }))
     }
 
-    handleToWorkingPage=(_id)=>{
-        this.props.dispatch(routerRedux.push({ 
+    handleToWorkingPage = (_id) => {
+        this.props.dispatch(routerRedux.push({
             pathname: './profile',
-            query: {id: _id}
-            }))
+            query: { id: _id }
+        }))
+    }
+    
+    handleToAuditPage = (_id) => {
+        this.props.dispatch(routerRedux.push({
+            pathname: './audit',
+            query: { id: _id }
+        }))
     }
 }

@@ -1,32 +1,38 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
+import Debounce from 'lodash-decorators/debounce';
+import Bind from 'lodash-decorators/bind';
 import { connect } from 'dva';
 import moment from 'moment';
-import router from 'umi/router';
 import {
+    Popover,
+    Tooltip,
     Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, InputNumber, DatePicker, Modal, message, Badge, Divider, Steps, Radio, Table
 } from 'antd';
-import AuditModal from '../Forms/AuditModal'
+import FooterToolbar from '@/components/FooterToolbar';
+import DescriptionList from '@/components/DescriptionList';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import { submitForm, submitDelete,submitAudit } from '@/utils/event';
+import styles from './AdvancedProfile.less';
 import { pagination } from '@/utils/utils'
-import styles from './TableList.less';
+import { submitForm, submitDelete } from '@/utils/event';
 
+const { Description } = DescriptionList;
+const ButtonGroup = Button.Group;
 const FormItem = Form.Item;
 const { Step } = Steps;
 const { TextArea } = Input;
 const { Option } = Select;
 const RadioGroup = Radio.Group;
 
-
-@connect(({ working, loading }) => ({
+@connect(({ working, project, loading }) => ({
     working,
+    project,
     loading: loading,
 }))
 @Form.create()
-export default class Working extends PureComponent {
+export default class ProjectProfile extends Component {
     state = {
         list: [],
-        isShowForm: false,
+        projectInfo: [],
         url: 'working'
     };
     params = {
@@ -34,14 +40,15 @@ export default class Working extends PureComponent {
         pageSize: 10,
     }
 
+
     columns = [
         {
             title: '编号',
             dataIndex: 'no',
         },
         {
-            title: '项目',
-            dataIndex: 'project.projectName',
+            title: '项目编号',
+            dataIndex: 'project.no',
         },
         {
             title: '设备编号',
@@ -65,61 +72,22 @@ export default class Working extends PureComponent {
                 <Fragment>
                     <a type="ghost" onClick={() => this.handleModalVisible(data.id)}>编辑</a>
                     <Divider type="vertical" />
-                    <a type="ghost" onClick={() => this.handleAuditVisible(data.id,true)}>审核</a>
-                    <Divider type="vertical" />
-                    <a type="danger" onClick={() => submitDelete(this.props.dispatch, this.state.url, data.id, this.handleFetch)} >删除</a>
+                    <a type="danger" onClick={() => submitDelete(this.props.dispatch, 'working', data.id, this.handleFetch)} >删除</a>
                 </Fragment>
             ),
         },
     ];
 
-    render() {
-        return (
-            <PageHeaderWrapper title="工时列表">
 
-                <Card bordered={false}>
-                    <div className={styles.tableList}>
-                        <div className={styles.tableListOperator}>
-                            <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(null)}>
-                                新建
-                         </Button>
-                        </div>
-                        <Table
-                            bordered
-                            columns={this.columns}
-                            dataSource={this.state.list}
-                            pagination={this.state.pagination}
-                        />
 
-                    </div>
-                </Card>
-                <Modal
-                    title={this.state.title}
-                    visible={this.state.isShowForm}
-                    onOk={() => submitForm(this.newForm, this.state.type, this.props.dispatch, this.state.url, this.formCallback)}
-                    onCancel={() => {
-                        this.newForm.props.form.resetFields();
-                        this.setState({
-                            isShowForm: false,
-                            formInfo: ''
-                        })
-                    }}
-                >
-                    <NewForm formInfo={this.state.formInfo} type={this.state.type} wrappedComponentRef={(inst) => { this.newForm = inst; }} />
-                </Modal>
-                <AuditModal  isShowAudit={this.state.isShowAudit} 
-                handleAuditVisible={this.handleAuditVisible}
-                handleAudit={(_values)=>{
-                    _values['id']=this.state.auditId;
-                    submitAudit(this.props.dispatch,this.state.url,_values,this.handleAuditVisible())}}
-                >
-                </AuditModal>
-            </PageHeaderWrapper>
-        );
-    }
 
     componentDidMount() {
+        const query_params = new URLSearchParams(this.props.location.search);
+        const id = query_params.get('id');
         this.handleFetch();
+        if (id != null && id != '') {
+            this.handleFetchProject(id)
+        }
     }
 
     handleFetch = () => {
@@ -128,7 +96,6 @@ export default class Working extends PureComponent {
             type: 'working/fetch',
             payload: this.params,
             callback: (response) => {
-                console.log(123)
                 if (response.code == 200 || response == 0) {
                     this.setState({
                         list: response.data.list,
@@ -143,11 +110,85 @@ export default class Working extends PureComponent {
         });
     }
 
-    handleAuditVisible = (id,flag) => {
-        this.setState({
-            auditId:id,
-            isShowAudit:!!flag,
-        })
+    handleFetchProject = (id) => {
+        const { dispatch } = this.props;
+        dispatch({
+            type: 'project/fetchId',
+            payload: id,
+            callback: (response) => {
+                if (response.code == '200' || response.code == '0') {
+                    this.setState({
+                        projectInfo: response.data
+                    })
+                }
+            }
+        });
+    }
+
+    render() {
+        const { projectInfo } = this.state;
+        const { profile, loading } = this.props;
+        const description = (
+            <DescriptionList className={styles.headerList} size="small" col="2">
+                <Description term="项目名">{projectInfo.projectName}</Description>
+                <Description term="地址">{projectInfo.address}</Description>
+                <Description term="开始日期">{projectInfo.startDate}</Description>
+                <Description term="关联单据">{projectInfo.endDate}</Description>
+                <Description term="结束日期">{projectInfo.endDate}</Description>
+                <Description term="备注">{projectInfo.description}</Description>
+            </DescriptionList>
+        );
+        const extra = (
+            <Row>
+                <Col xs={24} sm={12}>
+                    <div className={styles.textSecondary}>状态</div>
+                    <div className={styles.heading}>待审批</div>
+                </Col>
+                <Col xs={24} sm={12}>
+                    <div className={styles.textSecondary}>订单金额</div>
+                    <div className={styles.heading}></div>
+                </Col>
+            </Row>
+        );
+
+        return (
+            <PageHeaderWrapper
+                title="项目编号：123131"
+                logo={
+                    <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/nxkuOJlFJuAUhzlMTCEe.png" />
+                }
+                content={description}
+            // extraContent={extra}
+            >
+                <Card title="建设单位信息" style={{ marginBottom: 24 }} bordered={false}>
+                    <DescriptionList style={{ marginBottom: 24 }} title={projectInfo.constructionUnit}>
+                        <Description term="联系人">{projectInfo.unitContacts}</Description>
+                        <Description term="联系电话">{projectInfo.unitPhone}</Description>
+                        <Description>&nbsp;</Description>
+                        <Description term="单位地址">{projectInfo.unitAddress}</Description>
+                    </DescriptionList>
+                </Card>
+                <Modal
+                    title='项目审核'
+                    visible={this.state.isShowForm}
+                    onOk={() => submitForm(this.newForm, this.state.type, this.props.dispatch, 'project', this.formCallback)}
+                    onCancel={() => {
+                        this.newForm.props.form.resetFields();
+                        this.setState({
+                            isShowForm: false,
+                            formInfo: ''
+                        })
+                    }}
+                >
+                    <NewForm formInfo={this.state.formInfo} type={this.state.type} wrappedComponentRef={(inst) => { this.newForm = inst; }} />
+                </Modal>
+                <FooterToolbar style={{width:"100%"}}>
+                        <Button type="primary" onClick={() => { this.submitForm(1) }} > 提交</Button>
+                        <Button type="primary" onClick={() => { this.submitForm(0) }}> 暂存</Button>
+                        <Button > 取消</Button>
+                    </FooterToolbar>
+            </PageHeaderWrapper>
+        );
     }
 
     //显示form
@@ -192,50 +233,8 @@ export default class Working extends PureComponent {
 }
 
 
-@connect(({ project,machinery, loading }) => ({
-    project,
-    machinery,
-    loading: loading,
-}))
 class NewForm extends React.Component {
-    state = {
-        project: [],
-        machinery: []
-    }
-    componentDidMount() {
-        this.handleFetchProject();
-        this.handleFetchMachinery();
-    }
-
-    handleFetchProject = () => {
-        const { dispatch } = this.props;
-        dispatch({
-            type: 'project/fetch',
-            payload: {page:0,pageSize:0},
-            callback: (response) => {
-                if (response.code == 200 || response == 0) {
-                    this.setState({
-                        project: response.data.list,
-                    })
-                }
-            }
-        });
-    }
-
-    handleFetchMachinery = () => {
-        const { dispatch } = this.props;
-        dispatch({
-            type: 'machinery/fetch',
-            payload: {page:0,pageSize:0},
-            callback: (response) => {
-                if (response.code == 200 || response == 0) {
-                    this.setState({
-                        machinery: response.data.list,
-                    })
-                }
-            }
-        });
-    }
+   
 
     render() {
         const formItemLayout = {
@@ -249,8 +248,6 @@ class NewForm extends React.Component {
         const { getFieldDecorator } = this.props.form;
         const formInfo = this.props.formInfo || {};
         const type = this.props.type;
-        console.log('formInfo')
-        console.log(formInfo)
         return (
             <Form layout="horizontal">
                 {
@@ -260,22 +257,7 @@ class NewForm extends React.Component {
                         })(
                             <Input type='hidden' />
                         )}
-                <FormItem label='工时编号' {...formItemLayout}>
-                    {
-                        formInfo && type == 'no' ? formInfo.no :
-                            getFieldDecorator('no', {
-                                initialValue: formInfo.no == null ? 'w' + moment().format('YYYYMMDDHHmmss') : formInfo.no,
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '工时不能为空'
-                                    }
-                                ]
-                            })(
-                                <Input placeholder='请输入工时编号' disabled />
-                            )
-                    }
-                </FormItem>
+               
                 <FormItem label='项目' {...formItemLayout}>
                     {
                         formInfo && type == 'projectId' ? formInfo.projectId :
@@ -289,9 +271,7 @@ class NewForm extends React.Component {
                                 ]
                             })(
                                 <Select placeholder="-请选择-">
-                                    {
-                                        this.state.project.map(d => <Option value={d.id}>{d.projectName}</Option>)
-                                    }
+                                    <Option value=''>{d.projectName}</Option>
                                 </Select>
                             )
                     }
@@ -412,4 +392,3 @@ class NewForm extends React.Component {
 
 
 NewForm = Form.create({ name: 'new_form' })(NewForm);
-

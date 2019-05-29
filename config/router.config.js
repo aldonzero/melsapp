@@ -67,6 +67,12 @@ export default [
             hideInMenu: true,
             component: './Project/ProjectProfile',
           },
+          {
+            path: '/project/audit',
+            name: 'audit',
+            hideInMenu: true,
+            component: './Project/ProjectAudit',
+          },
         ],
       },
       // 设备
@@ -78,7 +84,7 @@ export default [
         routes: [
           {
             path: '/machinery/machinery',
-            name: 'machineryType',
+            name: 'machinery',
             component: './Machinery/Machinery',
           },
           {
@@ -88,10 +94,10 @@ export default [
           },
         ],
       },
-       // 设备
+       // 进出场管理
        {
         path: '/registration',
-        // authority: ['machineryM'],
+        authority: ['registrationM'],
         icon: 'table',
         name: 'registrationManage',
         routes: [
@@ -108,48 +114,48 @@ export default [
         ],
       },
        // 结算管理
-       {
-        path: '/bill',
-        icon: 'table',
-        // authority: ['billM'],
-        name: 'billManage',
-        routes: [
-          {
-            path: '/bill/billAdd',
-            name: 'billAdd',
-            component: './Bill/BillAdd',
-          },
-          {
-            path: '/bill/bill',
-            name: 'bill',
-            component: './Bill/Bill',
-          },
-        ],
-      },
+      //  {
+      //   path: '/bill',
+      //   icon: 'table',
+      //   // authority: ['billM'],
+      //   name: 'billManage',
+      //   routes: [
+      //     {
+      //       path: '/bill/billAdd',
+      //       name: 'billAdd',
+      //       component: './Bill/BillAdd',
+      //     },
+      //     {
+      //       path: '/bill/bill',
+      //       name: 'bill',
+      //       component: './Bill/Bill',
+      //     },
+      //   ],
+      // },
       // 租赁管理
-      {
-        path: '/rental',
-        icon: 'table',
-        authority: ['rentalM'],
-        name: 'rentalManage',
-        routes: [
-          {
-            path: '/rental/rental',
-            name: 'rental',
-            component: './Project/working',
-          },
-          {
-            path: '/rental/cost',
-            name: 'cost',
-            component: './Project/ProjectCost',
-          },
-        ],
-      },
-      // 租赁管理
+      // {
+      //   path: '/rental',
+      //   icon: 'table',
+      //   authority: ['rentalM'],
+      //   name: 'rentalManage',
+      //   routes: [
+      //     {
+      //       path: '/rental/rental',
+      //       name: 'rental',
+      //       component: './Project/working',
+      //     },
+      //     {
+      //       path: '/rental/cost',
+      //       name: 'cost',
+      //       component: './Project/ProjectCost',
+      //     },
+      //   ],
+      // },
+      // 票据管理
       {
         path: '/ticket',
         icon: 'table',
-        // authority: ['rentalM'],
+        authority: ['ticketM'],
         name: 'ticketManage',
         routes: [
           {

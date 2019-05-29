@@ -63,10 +63,10 @@ export default class UserRole extends PureComponent {
         },
         {
             title: '状态',
-            dataIndex: 'userState',
+            dataIndex: 'available',
             render(val) {
                 let config = {
-                    '0': '启用', '1': '禁用'
+                    'true': '在职', 'false': '离职'
                 }
                 return config[val];
             }

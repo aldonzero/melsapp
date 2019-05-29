@@ -5,11 +5,13 @@ import router from 'umi/router';
 import {
     Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, InputNumber, DatePicker, Modal, message, Badge, Divider, Steps, Radio, Table
 } from 'antd';
-import StandardTable from '@/components/StandardTable';
+import AuditModal from '../Forms/AuditModal'
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import { submitForm, submitDelete } from '@/utils/event';
+import { submitForm, submitDelete,submitAudit } from '@/utils/event';
 import { pagination } from '@/utils/utils'
-
+import RenderAuthorized from '@/components/Authorized';
+import { getAuthority } from '@/utils/authority';
+let Authorized = RenderAuthorized(getAuthority());
 import styles from './TableList.less';
 
 const FormItem = Form.Item;
@@ -56,13 +58,19 @@ export default class ticket extends PureComponent {
         },
         {
             title: '日期',
-            dataIndex: 'costDate'
+            dataIndex: 'costDate',
+            render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
         },
         {
             title: '操作',
             render: (data) => (
                 <Fragment>
                     <a type="ghost" onClick={() => this.handleModalVisible(data.id)}>编辑</a>
+                    
+                    <Authorized authority={['ticketAudit']} >
+                    <Divider type="vertical" />
+                    <a type="ghost" onClick={() => this.handleAuditVisible(data.id,true)}>审核</a>
+                    </Authorized>
                     <Divider type="vertical" />
                     <a type="danger" onClick={() => submitDelete(this.props.dispatch, this.state.url, data.id, this.handleFetch)} >删除</a>
                 </Fragment>
@@ -154,6 +162,13 @@ export default class ticket extends PureComponent {
                         type={this.state.type}
                         wrappedComponentRef={(inst) => { this.newForm = inst; }} />
                 </Modal>
+                <AuditModal  isShowAudit={this.state.isShowAudit} 
+                handleAuditVisible={this.handleAuditVisible}
+                handleAudit={(_values)=>{
+                    _values['id']=this.state.auditId;
+                    submitAudit(this.props.dispatch,this.state.url,_values,this.handleAuditVisible())}}
+                >
+                </AuditModal>
             </PageHeaderWrapper>
         );
     }
@@ -190,7 +205,12 @@ export default class ticket extends PureComponent {
         });
       };
     /*******************************************************************/
-
+    handleAuditVisible = (id,flag) => {
+        this.setState({
+            auditId:id,
+            isShowAudit:!!flag,
+        })
+    }
 
     componentDidMount() {
         this.handleFetch();

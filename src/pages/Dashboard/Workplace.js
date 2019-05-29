@@ -125,7 +125,7 @@ class Workplace extends PureComponent {
       ) : null;
 
 
-      console.log('project into=>',this.state.list)
+
     return (
       
       <PageHeaderWrapper
@@ -133,7 +133,7 @@ class Workplace extends PureComponent {
         content={pageHeaderContent}
       // extraContent={extra}
       >
-        <Card bordered={false} title='项目列表'>
+        {/* <Card bordered={false} title='项目列表'>
           <div className={styles.tableList}>
             <Table
               bordered
@@ -143,7 +143,7 @@ class Workplace extends PureComponent {
             />
 
           </div>
-        </Card>
+        </Card> */}
       </PageHeaderWrapper>
     );
   }

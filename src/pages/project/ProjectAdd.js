@@ -149,7 +149,7 @@ export default class ProjectAdd extends PureComponent {
                             {
                                 formInfo && type == 'startDate' ? formInfo.startDate :
                                     getFieldDecorator('startDate', {
-                                        initialValue: formInfo.startDate == null ? moment(moment().format('YYYY-MM-DD'), 'YYYY-MM-DD') : moment(formInfo.startDate, 'YYYY-MM-DD'),
+                                        initialValue: formInfo.startDate == null ? moment(moment().locale('zh-cn').format('YYYY-MM-DD'), 'YYYY-MM-DD') : moment(formInfo.startDate, 'YYYY-MM-DD'),
                                         rules: [
                                             {
                                                 required: true,
@@ -175,10 +175,10 @@ export default class ProjectAdd extends PureComponent {
                                     })(
                                         <Select placeholder="-请选择-">
                                             <Option value="">-请选择-</Option>
-                                            <Option value="0">立项</Option>
-                                            <Option value="1">施工</Option>
-                                            <Option value='2'>竣工</Option>
-                                            <Option value='3'>放弃</Option>
+                                            <Option value="1">立项</Option>
+                                            <Option value="2">施工</Option>
+                                            <Option value='3'>竣工</Option>
+                                            <Option value='4'>放弃</Option>
                                         </Select>
                                     )
                             }
@@ -253,7 +253,7 @@ export default class ProjectAdd extends PureComponent {
 
                     <FooterToolbar style={{ width }}>
                         <Button type="primary" onClick={() => { this.submitForm(1) }} > 提交</Button>
-                        <Button type="primary" onClick={() => { this.submitForm(0) }}> 暂存</Button>
+                        {/* <Button type="primary" onClick={() => { this.submitForm(0) }}> 暂存</Button> */}
                         <Button > 取消</Button>
                     </FooterToolbar>
                 </Form>
